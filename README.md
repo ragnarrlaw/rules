@@ -1,2 +1,2 @@
-# rules
-Rule engine for defining and processing custom rules related to product items in stores
+# Rule engine
+Rule engine is a simple query like language for processing rules related to store products.
