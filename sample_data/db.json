@@ -1,0 +1,82 @@
+{
+    "product_categories": [
+        {
+            "id": "cate-2453743211453",
+            "parent_id": "",
+            "category": "en:food_n_beverages",
+            "categories_tags": [
+                "en:plant-based-foods-and-beverages",
+                "en:beverages",
+                "en:plant-based-foods",
+                "en:dairy-substitutes",
+                "en:milk-substitutes",
+                "en:plant-based-beverages",
+                "en:plant-based-milk-alternatives",
+                "en:plant-based-creams",
+                "en:plant-based-creams-for-cooking",
+                "en:coconut-milks-and-creams"
+            ]
+        }
+    ],
+    "stores": [
+        {
+            "id": "str-4545667778367",
+            "name": "S.k. Samarasinghe Stores",
+            "location": {
+                "coordinates": {
+                    "latitude": 60.0012124,
+                    "longitude": 32.9909011
+                },
+                "geocoding": "No, 10, Hill Town Road"
+            },
+            "store_products": [
+                {
+                    "product_id": "prod-8711741305355",
+                    "inventory_quantity": "100000",
+                    "unit_of_measure": "g",
+                    "per_unit_quantity": "100",
+                    "price_per_unit": "5.99",
+                    "currency": "USD"
+                },
+                {
+                    "product_id": "prod-8711741305321",
+                    "inventory_quantity": "10000",
+                    "unit_of_measure": "ml",
+                    "per_unit_quantity": "10",
+                    "price_per_unit": "2.49",
+                    "currency": "USD"
+                },
+                {
+                    "product_id": "prod-8711741305323",
+                    "inventory_quantity": "100",
+                    "unit_of_measure": "pcs",
+                    "per_unit_quantity": "1",
+                    "price_per_unit": "0.49",
+                    "currency": "USD"
+                }
+            ],
+            "discounts": [
+                "product_id in [prod-8711741305355, prod-8711741305321, prod-8711741305323] then percentage = 10",
+                "product_id == prod-8711741309022 then flat_amount = 20",
+                "product_category == \"dairy\" THEN Percentage=10",
+                "min_cart_value > 500 AND then percentage = 12.5"
+            ]
+        }
+    ],
+    "products": [
+        {
+            "id": "prod-8711741305355",
+            "code": "8711741305355",
+            "product_name_en": "Coconut milk",
+            "brands": ["fair-trade-original"],
+            "category": "cate-2453743211453",
+            "labels_tags": [
+                "en:fair-trade",
+                "en:organic",
+                "en:fairtrade-international"
+            ],
+            "product_attributes": "{\"serving_size\": \"400 ml\", \"quantity\": \"400 ml\"}",
+            "unit_of_measure": "pcs"
+        }
+    ]
+}
