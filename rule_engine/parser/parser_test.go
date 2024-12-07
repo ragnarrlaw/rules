@@ -1,0 +1,84 @@
+package parser
+
+import (
+	"testing"
+
+	"github.com/ragnarrlaw/rules/rule_engine/lexer"
+)
+
+func TestParseRule(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected Rule
+	}{
+		{
+			`product_id in [1, 2, 3] AND product_id in [1, 2, 3] then percentage = 10`,
+			Rule{
+				Condition: &LogicalCondition{
+					Left: &Condition{
+						Key:      "product_id",
+						Operator: "in",
+						Value:    []string{"1", "2", "3"},
+					},
+					Operator: "AND",
+					Right: &Condition{
+						Key:      "product_id",
+						Operator: "in",
+						Value:    []string{"1", "2", "3"},
+					},
+				}, Action: &Action{
+					DiscountType: "percentage",
+					Value:        "10",
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		l := lexer.NewLexer(test.input)
+		p := NewParser(l)
+		r, err := p.ParseRule()
+		if err != nil {
+			t.Fatalf(
+				"parsing rule %s with the error %s",
+				test.input,
+				err.Error(),
+			)
+		}
+		if r.Condition.Operator != test.expected.Condition.Operator {
+			t.Fatalf(
+				"operator %s interpreted as %s",
+				test.expected.Condition.Operator,
+				r.Condition.Operator,
+			)
+		}
+		if r.Condition.Left.Operator != test.expected.Condition.Left.Operator {
+			t.Fatalf(
+				"left condition operator %s interpreted as %s",
+				test.expected.Condition.Left.Operator,
+				r.Condition.Left.Operator,
+			)
+		}
+		if r.Condition.Left.Key != test.expected.Condition.Left.Key {
+			t.Fatalf(
+				"left condition key %s interpreted as %s",
+				test.expected.Condition.Left.Key,
+				r.Condition.Left.Key,
+			)
+		}
+		if r.Condition.Right.Operator != test.expected.Condition.Right.Operator {
+			t.Fatalf(
+				"right condition operator %s interpreted as %s",
+				test.expected.Condition.Right.Operator,
+				r.Condition.Right.Operator,
+			)
+		}
+		if r.Condition.Right.Key != test.expected.Condition.Right.Key {
+			t.Fatalf(
+				"right condition key %s interpreted as %s",
+				test.expected.Condition.Right.Key,
+				r.Condition.Right.Key,
+			)
+		}
+	}
+}
