@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"strings"
 	"text/scanner"
 	"unicode"
@@ -9,37 +10,22 @@ import (
 type TokenType string
 
 const (
-	// end-of-file marker
-	TokenEOF TokenType = "eof"
-	// any permitted keywords min_cart_value, product_category, etc.
-	TokenKeyword TokenType = "keyword"
-	// comparison operators ==, !=, >, etc.
-	TokenComparison TokenType = "comparison_operator"
-	// logical operators AND, and OR
-	TokenLogical TokenType = "logical_operator"
-	// strings or character sequences
-	TokenLiteralString TokenType = "literal_string"
-	// numbers 1,2,3,...
-	TokenLiteralNumber TokenType = "literal_number"
-	// '='
+	TokenEOF                TokenType = "eof"
+	TokenKeyword            TokenType = "keyword"
+	TokenComparison         TokenType = "comparison_operator"
+	TokenLogical            TokenType = "logical_operator"
+	TokenLiteralString      TokenType = "literal_string"
+	TokenLiteralNumber      TokenType = "literal_number"
 	TokenAssignmentOperator TokenType = "assignment_operator"
-	// '['
-	TokenOpenBracket TokenType = "open_bracket"
-	// ']'
-	TokenCloseBracket TokenType = "close_bracket"
-	// '('
-	TokenOpenParenthesis TokenType = "open_parenthesis"
-	// ')'
-	TokenCloseParenthesis TokenType = "close_parenthesis"
-	// ','
-	TokenComma TokenType = "comma"
-	// marks the start of the action -> 'THEN' (or 'then')
-	TokenAction TokenType = "action"
-	// keywords that define discount types -> precentage, flat_amount, and bogo (buy one get one free)
-	TokenDiscountType TokenType = "discount_types"
+	TokenOpenBracket        TokenType = "open_bracket"
+	TokenCloseBracket       TokenType = "close_bracket"
+	TokenOpenParenthesis    TokenType = "open_parenthesis"
+	TokenCloseParenthesis   TokenType = "close_parenthesis"
+	TokenComma              TokenType = "comma"
+	TokenAction             TokenType = "action"
+	TokenDiscountType       TokenType = "discount_types"
 )
 
-// represents a single token
 type Token struct {
 	Type  TokenType
 	Value string
@@ -71,26 +57,39 @@ func (l *Lexer) NextToken() *Token {
 		return &Token{Type: TokenCloseBracket, Value: "]"}
 	case ',':
 		return &Token{Type: TokenComma, Value: ","}
+	case '=':
+		return &Token{Type: TokenComparison, Value: "="}
+	case '>':
+		return &Token{Type: TokenComparison, Value: ">"}
+	case '<':
+		return &Token{Type: TokenComparison, Value: "<"}
 	default:
 		t := l.scanner.TokenText()
-		if unicode.IsDigit([]rune(t)[0]) || t[0] == '-' {
+		t = strings.ToUpper(t)
+
+		switch t {
+		case "==", "!=", ">=", "<=", "IN":
+			return &Token{Type: TokenComparison, Value: t}
+		}
+
+		if unicode.IsDigit([]rune(t)[0]) || t[0] == '-' || strings.Contains(t, ".") {
 			return &Token{Type: TokenLiteralNumber, Value: t}
 		}
+
 		switch t {
-		case "AND", "OR", "and", "or":
+		case "AND", "OR":
 			return &Token{Type: TokenLogical, Value: t}
-		case "THEN", "then":
+		case "THEN":
 			return &Token{Type: TokenAction, Value: t}
-		case "percentage", "Percentage", "flat_amount", "Flat_amount", "bogo", "BOGO":
+		case "PERCENTAGE", "FLAT_AMOUNT", "BOGO", "PRODUCT_PERCENTAGE", "CART_PERCENTAGE", "PRODUCT_FLAT_AMOUNT", "CART_FLAT_AMOUNT":
 			return &Token{Type: TokenDiscountType, Value: t}
-		case "min_cart_price", "total_price", "Total_price", "product_id", "Product_id", "total_category_price", "category_id":
+		case "MIN_CART_PRICE", "TOTAL_PRICE", "PRODUCT_ID", "TOTAL_CATEGORY_PRICE", "CATEGORY_ID", "PURCHASE_QUANTITY":
 			return &Token{Type: TokenKeyword, Value: t}
-		case "==", "!=", ">", ">=", "<", "<=", "in", "IN":
-			return &Token{Type: TokenComparison, Value: t}
-		case "=":
-			return &Token{Type: TokenAssignmentOperator, Value: t}
 		default:
-			return &Token{Type: TokenLiteralString, Value: t}
+			if unicode.IsLetter([]rune(t)[0]) {
+				return &Token{Type: TokenLiteralString, Value: t}
+			}
+			return &Token{Type: TokenEOF, Value: fmt.Sprintf("unexpected character: %s", t)}
 		}
 	}
 }
