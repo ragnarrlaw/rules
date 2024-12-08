@@ -12,7 +12,7 @@ func TestNextToken(t *testing.T) {
 		{
 			`product_id IN [1, 2, 3]`,
 			[]Token{
-				{Type: TokenKeyword, Value: "product_id"},
+				{Type: TokenKeyword, Value: "PRODUCT_ID"},
 				{Type: TokenComparison, Value: "IN"},
 				{Type: TokenOpenBracket, Value: "["},
 				{Type: TokenLiteralNumber, Value: "1"},
@@ -27,22 +27,21 @@ func TestNextToken(t *testing.T) {
 		{
 			`total_price > 100 AND total_category_price < 500`,
 			[]Token{
-				{Type: TokenKeyword, Value: "total_price"},
+				{Type: TokenKeyword, Value: "TOTAL_PRICE"},
 				{Type: TokenComparison, Value: ">"},
 				{Type: TokenLiteralNumber, Value: "100"},
 				{Type: TokenLogical, Value: "AND"},
-				{Type: TokenKeyword, Value: "total_category_price"},
+				{Type: TokenKeyword, Value: "TOTAL_CATEGORY_PRICE"},
 				{Type: TokenComparison, Value: "<"},
 				{Type: TokenLiteralNumber, Value: "500"},
 				{Type: TokenEOF, Value: ""},
 			},
 		},
 		{
-			`THEN Percentage = 10`,
+			`THEN Percentage 10`,
 			[]Token{
 				{Type: TokenAction, Value: "THEN"},
-				{Type: TokenDiscountType, Value: "Percentage"},
-				{Type: TokenAssignmentOperator, Value: "="},
+				{Type: TokenDiscountType, Value: "PERCENTAGE"},
 				{Type: TokenLiteralNumber, Value: "10"},
 				{Type: TokenEOF, Value: ""},
 			},
