@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ragnarrlaw/rules/rule_engine/lexer"
 )
@@ -45,21 +46,8 @@ func (p *Parser) consume(expectedType lexer.TokenType) error {
 	return nil
 }
 
-/*
-Parses a given condition such as,
-1. product_id in [1,2,3]
-2. product_id == 10
-
-Output for the second case:
-
-	Condition{
-	  Key: product_id
-	  Operator: '=='
-	  Value: 10
-	}
-*/
 func (p *Parser) parseCondition() (*Condition, error) {
-	key := p.currentToken.Value
+	key := strings.ToUpper(p.currentToken.Value)
 	if err := p.consume(lexer.TokenKeyword); err != nil {
 		return nil, err
 	}
@@ -70,7 +58,8 @@ func (p *Parser) parseCondition() (*Condition, error) {
 	}
 
 	var value interface{}
-	if p.currentToken.Type == lexer.TokenOpenBracket { // for [1,2,3]
+	switch p.currentToken.Type {
+	case lexer.TokenOpenBracket:
 		if err := p.consume(lexer.TokenOpenBracket); err != nil {
 			return nil, err
 		}
@@ -90,28 +79,23 @@ func (p *Parser) parseCondition() (*Condition, error) {
 		if err := p.consume(lexer.TokenCloseBracket); err != nil {
 			return nil, err
 		}
-	} else {
+	case lexer.TokenLiteralNumber:
 		value = p.currentToken.Value
 		if err := p.consume(lexer.TokenLiteralNumber); err != nil {
 			return nil, err
 		}
+	case lexer.TokenLiteralString:
+		value = p.currentToken.Value
+		if err := p.consume(lexer.TokenLiteralString); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unexpected token: %s", p.currentToken.Value)
 	}
+
 	return &Condition{Key: key, Operator: operator, Value: value}, nil
 }
 
-/*
-Parses a given action such as,
-1.THEN percentage = 10
-2.THEN flat = 5
-3.THEN bogo = 1
-
-Output for the second case:
-
-	Action{
-	  DiscountType: percentage
-	  Value: 10
-	}
-*/
 func (p *Parser) parseAction() (*Action, error) {
 	if err := p.consume(lexer.TokenAction); err != nil {
 		return nil, err
@@ -119,10 +103,6 @@ func (p *Parser) parseAction() (*Action, error) {
 
 	discountType := p.currentToken.Value
 	if err := p.consume(lexer.TokenDiscountType); err != nil {
-		return nil, err
-	}
-
-	if err := p.consume(lexer.TokenAssignmentOperator); err != nil {
 		return nil, err
 	}
 
@@ -134,21 +114,18 @@ func (p *Parser) parseAction() (*Action, error) {
 	return &Action{DiscountType: discountType, Value: value}, nil
 }
 
-/*
-Parses a single rule with two conditions connected by a single operator
-*/
 func (p *Parser) ParseRule() (*Rule, error) {
 	condition, err := p.parseCondition()
 	if err != nil {
 		return nil, err
 	}
 
-	LogicalCondition := LogicalCondition{
+	logicalCondition := LogicalCondition{
 		Left: condition,
 	}
 
 	if p.currentToken.Type == lexer.TokenLogical {
-		LogicalCondition.Operator = p.currentToken.Value
+		logicalCondition.Operator = p.currentToken.Value
 		if err := p.consume(lexer.TokenLogical); err != nil {
 			return nil, err
 		}
@@ -156,7 +133,7 @@ func (p *Parser) ParseRule() (*Rule, error) {
 		if err != nil {
 			return nil, err
 		}
-		LogicalCondition.Right = rightCondition
+		logicalCondition.Right = rightCondition
 	}
 
 	action, err := p.parseAction()
@@ -165,7 +142,7 @@ func (p *Parser) ParseRule() (*Rule, error) {
 	}
 
 	return &Rule{
-		Condition: &LogicalCondition,
+		Condition: &logicalCondition,
 		Action:    action,
 	}, nil
 }
