@@ -12,22 +12,22 @@ func TestParseRule(t *testing.T) {
 		expected Rule
 	}{
 		{
-			`product_id in [1, 2, 3] AND product_id in [1, 2, 3] then percentage = 10`,
+			`product_id in [1, 2, 3] AND product_id in [1, 2, 3] then percentage 10`,
 			Rule{
 				Condition: &LogicalCondition{
 					Left: &Condition{
-						Key:      "product_id",
-						Operator: "in",
+						Key:      "PRODUCT_ID",
+						Operator: "IN",
 						Value:    []string{"1", "2", "3"},
 					},
 					Operator: "AND",
 					Right: &Condition{
-						Key:      "product_id",
-						Operator: "in",
+						Key:      "PRODUCT_ID",
+						Operator: "IN",
 						Value:    []string{"1", "2", "3"},
 					},
 				}, Action: &Action{
-					DiscountType: "percentage",
+					DiscountType: "PERCENTAGE",
 					Value:        "10",
 				},
 			},
@@ -65,6 +65,18 @@ func TestParseRule(t *testing.T) {
 				test.expected.Condition.Left.Key,
 				r.Condition.Left.Key,
 			)
+		}
+		if r.Condition.Left.Value != nil {
+			for i, v := range r.Condition.Left.Value.([]string) {
+				if v != test.expected.Condition.Left.Value.([]string)[i] {
+					t.Fatalf(
+						"left condition value at %d index %s, interpreted as %s",
+						i,
+						test.expected.Condition.Left.Value.([]string)[i],
+						v,
+					)
+				}
+			}
 		}
 		if r.Condition.Right.Operator != test.expected.Condition.Right.Operator {
 			t.Fatalf(
