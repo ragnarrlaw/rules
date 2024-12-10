@@ -36,15 +36,18 @@ func Evaluate(c *Context) error {
 
 func EvaluateLogicalCondition(r *parser.LogicalCondition, store *StoreContext, product *ProductContext) (bool, error) {
 	leftResult := evaluateSingleCondition(r.Left, store, product)
-	rightResult := evaluateSingleCondition(r.Right, store, product)
-	switch r.Operator {
-	case "AND":
-		return leftResult && rightResult, nil
-	case "OR":
-		return leftResult || rightResult, nil
-	default:
-		return false, fmt.Errorf("unknown logical operator %s", r.Operator)
+	if r.Operator != "" {
+		rightResult := evaluateSingleCondition(r.Right, store, product)
+		switch r.Operator {
+		case "AND":
+			return leftResult && rightResult, nil
+		case "OR":
+			return leftResult || rightResult, nil
+		default:
+			return false, fmt.Errorf("unknown logical operator %s", r.Operator)
+		}
 	}
+	return leftResult, nil
 }
 
 // TODO: ADD EVALUATION FUNCTIONS TO EACH DISCOUNT TYPE -> PRODUCT, CATEGORY, AND CART(STORE-WIDE)
@@ -65,7 +68,7 @@ func evaluateSingleCondition(c *parser.Condition, store *StoreContext, product *
 }
 
 func compare(operator string, left interface{}, right interface{}) bool {
-	switch strings.ToUpper(operator) {
+	switch operator {
 	case "=":
 		return left == right
 	case "!=":
@@ -78,7 +81,7 @@ func compare(operator string, left interface{}, right interface{}) bool {
 		return left.(float64) < right.(float64)
 	case "<=":
 		return left.(float64) <= right.(float64)
-	case "IN":
+	case "IN", "in":
 		for _, e := range left.([]string) {
 			if e == right.(string) {
 				return true
@@ -99,16 +102,29 @@ func ApplyAction(a *parser.Action, store *StoreContext, product *ProductContext)
 	}
 	switch c {
 	case "product_percentage":
-		product.DiscountedPrice = product.OriginalPrice * (1 - f/100)
+		if product.DiscountedPrice == 0 {
+			product.DiscountedPrice = product.OriginalPrice * (1 - f/100)
+		}
+		product.DiscountedPrice *= (1 - f/100)
+
 		return nil
 	case "product_flat_amount":
-		product.DiscountedPrice = product.OriginalPrice - f
+		if product.DiscountedPrice == 0 {
+			product.DiscountedPrice = product.OriginalPrice - f
+		}
+		product.DiscountedPrice -= f
 		return nil
 	case "cart_percentage":
-		store.CartPriceAfterDiscounts = store.CartPrice * (1 - f/100)
+		if store.CartPriceAfterDiscounts == 0 {
+			store.CartPriceAfterDiscounts = store.CartPrice * (1 - f/100)
+		}
+		store.CartPriceAfterDiscounts *= (1 - f/100)
 		return nil
 	case "cart_flat_amount":
-		store.CartPriceAfterDiscounts = store.CartPrice - f
+		if store.CartPriceAfterDiscounts == 0 {
+			store.CartPriceAfterDiscounts = store.CartPrice - f
+		}
+		store.CartPriceAfterDiscounts -= f
 		return nil
 	default:
 		return fmt.Errorf("unknown discount type %s", c)
