@@ -1,8 +1,45 @@
 {
+    "users": [
+        {
+            "id": "user-2453743211453",
+            "username": "celo_hernzz",
+            "first_name": "Marcelo",
+            "last_name": "Hernandez",
+            "preferences": {
+                "preferred_brands": [
+                    {
+                        "category": "beverages",
+                        "brands": ["corleone"]
+                    }
+                ],
+                "preferred_payment_type": "CARD",
+                "cards": ["VISA", "MASTER", "AMEX"],
+                "theme": "dark"
+            }
+        }
+    ],
+    "user_input_lists": [
+        {
+            "id": "list-2453743211453",
+            "user_id": "user-2453743211453",
+            "items": [
+                {
+                    "product_id": "prod-8711741305321",
+                    "quantity": 10,
+                    "unit_of_measure": "g"
+                },
+                {
+                    "product_id": "prod-8711741305323",
+                    "quantity": 2,
+                    "unit_of_measure": "pcs"
+                }
+            ]
+        }
+    ],
     "product_categories": [
         {
             "id": "cate-2453743211453",
-            "parent_id": "",
+            "parent_id": null,
             "category": "en:food_n_beverages",
             "categories_tags": [
                 "en:plant-based-foods-and-beverages",
@@ -21,7 +58,7 @@
     "stores": [
         {
             "id": "str-4545667778367",
-            "name": "S.k. Samarasinghe Stores",
+            "name": "Godfather Stores",
             "location": {
                 "coordinates": {
                     "latitude": 60.0012124,
