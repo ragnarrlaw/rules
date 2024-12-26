@@ -104,27 +104,30 @@ func ApplyAction(a *parser.Action, store *StoreContext, product *ProductContext)
 	case "product_percentage":
 		if product.DiscountedPrice == 0 {
 			product.DiscountedPrice = product.OriginalPrice * (1 - f/100)
+		} else {
+			product.DiscountedPrice *= (1 - f/100)
 		}
-		product.DiscountedPrice *= (1 - f/100)
-
 		return nil
 	case "product_flat_amount":
 		if product.DiscountedPrice == 0 {
 			product.DiscountedPrice = product.OriginalPrice - f
+		} else {
+			product.DiscountedPrice -= f
 		}
-		product.DiscountedPrice -= f
 		return nil
 	case "cart_percentage":
 		if store.CartPriceAfterDiscounts == 0 {
 			store.CartPriceAfterDiscounts = store.CartPrice * (1 - f/100)
+		} else {
+			store.CartPriceAfterDiscounts *= (1 - f/100)
 		}
-		store.CartPriceAfterDiscounts *= (1 - f/100)
 		return nil
 	case "cart_flat_amount":
 		if store.CartPriceAfterDiscounts == 0 {
 			store.CartPriceAfterDiscounts = store.CartPrice - f
+		} else {
+			store.CartPriceAfterDiscounts -= f
 		}
-		store.CartPriceAfterDiscounts -= f
 		return nil
 	default:
 		return fmt.Errorf("unknown discount type %s", c)
