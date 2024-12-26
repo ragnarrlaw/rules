@@ -7,11 +7,11 @@ import (
 func TestNextToken(t *testing.T) {
 	tests := []struct {
 		input    string
-		expected []Token
+		expected []*Token
 	}{
 		{
 			`product_id IN [1, 2, 3]`,
-			[]Token{
+			[]*Token{
 				{Type: TokenKeyword, Value: "PRODUCT_ID"},
 				{Type: TokenComparison, Value: "IN"},
 				{Type: TokenOpenBracket, Value: "["},
@@ -26,7 +26,7 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			`total_price > 100 AND total_category_price < 500`,
-			[]Token{
+			[]*Token{
 				{Type: TokenKeyword, Value: "TOTAL_PRICE"},
 				{Type: TokenComparison, Value: ">"},
 				{Type: TokenLiteralNumber, Value: "100"},
@@ -39,10 +39,21 @@ func TestNextToken(t *testing.T) {
 		},
 		{
 			`THEN Percentage 10`,
-			[]Token{
+			[]*Token{
 				{Type: TokenAction, Value: "THEN"},
 				{Type: TokenDiscountType, Value: "PERCENTAGE"},
 				{Type: TokenLiteralNumber, Value: "10"},
+				{Type: TokenEOF, Value: ""},
+			},
+		},
+		{
+			`product_id IN ["9f9285c6-a4d3-407e-9bd6-92ed094d0b02"]`,
+			[]*Token{
+				{Type: TokenKeyword, Value: "PRODUCT_ID"},
+				{Type: TokenComparison, Value: "IN"},
+				{Type: TokenOpenBracket, Value: "["},
+				{Type: TokenUUID, Value: `"9f9285c6-a4d3-407e-9bd6-92ed094d0b02"`},
+				{Type: TokenCloseBracket, Value: "]"},
 				{Type: TokenEOF, Value: ""},
 			},
 		},

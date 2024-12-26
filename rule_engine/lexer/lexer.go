@@ -5,6 +5,8 @@ import (
 	"strings"
 	"text/scanner"
 	"unicode"
+
+	"github.com/google/uuid"
 )
 
 type TokenType string
@@ -24,6 +26,7 @@ const (
 	TokenComma              TokenType = "comma"
 	TokenAction             TokenType = "action"
 	TokenDiscountType       TokenType = "discount_types"
+	TokenUUID               TokenType = "uuid"
 )
 
 type Token struct {
@@ -65,6 +68,12 @@ func (l *Lexer) NextToken() *Token {
 		return &Token{Type: TokenComparison, Value: "<"}
 	default:
 		t := l.scanner.TokenText()
+
+		// Check if the token is a UUID
+		if _, err := uuid.Parse(t); err == nil {
+			return &Token{Type: TokenUUID, Value: t}
+		}
+
 		t = strings.ToUpper(t)
 
 		switch t {
