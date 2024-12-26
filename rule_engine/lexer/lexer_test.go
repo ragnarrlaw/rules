@@ -52,8 +52,17 @@ func TestNextToken(t *testing.T) {
 				{Type: TokenKeyword, Value: "PRODUCT_ID"},
 				{Type: TokenComparison, Value: "IN"},
 				{Type: TokenOpenBracket, Value: "["},
-				{Type: TokenUUID, Value: `"9f9285c6-a4d3-407e-9bd6-92ed094d0b02"`},
+				{Type: TokenUUID, Value: "9f9285c6-a4d3-407e-9bd6-92ed094d0b02"},
 				{Type: TokenCloseBracket, Value: "]"},
+				{Type: TokenEOF, Value: ""},
+			},
+		},
+		{
+			`product_id = "9f9285c6-a4d3-407e-9bd6-92ed094d0b02"`,
+			[]*Token{
+				{Type: TokenKeyword, Value: "PRODUCT_ID"},
+				{Type: TokenComparison, Value: "="},
+				{Type: TokenUUID, Value: "9f9285c6-a4d3-407e-9bd6-92ed094d0b02"},
 				{Type: TokenEOF, Value: ""},
 			},
 		},

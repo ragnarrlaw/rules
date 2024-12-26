@@ -70,8 +70,8 @@ func (l *Lexer) NextToken() *Token {
 		t := l.scanner.TokenText()
 
 		// Check if the token is a UUID
-		if _, err := uuid.Parse(t); err == nil {
-			return &Token{Type: TokenUUID, Value: t}
+		if u, err := uuid.Parse(t); err == nil {
+			return &Token{Type: TokenUUID, Value: u.String()}
 		}
 
 		t = strings.ToUpper(t)
