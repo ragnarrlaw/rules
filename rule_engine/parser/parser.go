@@ -71,8 +71,16 @@ func (p *Parser) parseCondition() (*Condition, error) {
 				}
 			}
 			values = append(values, p.currentToken.Value)
-			if err := p.consume(lexer.TokenLiteralNumber); err != nil {
-				return nil, err
+			if p.currentToken.Type == lexer.TokenLiteralNumber {
+				if err := p.consume(lexer.TokenLiteralNumber); err != nil {
+					return nil, err
+				}
+			} else if p.currentToken.Type == lexer.TokenUUID {
+				if err := p.consume(lexer.TokenUUID); err != nil {
+					return nil, err
+				}
+			} else {
+				return nil, fmt.Errorf("unexpected token: %s", p.currentToken.Value)
 			}
 		}
 		value = values

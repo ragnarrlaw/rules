@@ -32,6 +32,21 @@ func TestParseRule(t *testing.T) {
 				},
 			},
 		},
+		{
+			`product_id in ["9f9285c6-a4d3-407e-9bd6-92ed094d0b02"] then percentage 10`,
+			Rule{
+				Condition: &LogicalCondition{
+					Left: &Condition{
+						Key:      "PRODUCT_ID",
+						Operator: "IN",
+						Value:    []string{`"9f9285c6-a4d3-407e-9bd6-92ed094d0b02"`},
+					},
+				}, Action: &Action{
+					DiscountType: "PERCENTAGE",
+					Value:        "10",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -78,19 +93,21 @@ func TestParseRule(t *testing.T) {
 				}
 			}
 		}
-		if r.Condition.Right.Operator != test.expected.Condition.Right.Operator {
-			t.Fatalf(
-				"right condition operator %s interpreted as %s",
-				test.expected.Condition.Right.Operator,
-				r.Condition.Right.Operator,
-			)
-		}
-		if r.Condition.Right.Key != test.expected.Condition.Right.Key {
-			t.Fatalf(
-				"right condition key %s interpreted as %s",
-				test.expected.Condition.Right.Key,
-				r.Condition.Right.Key,
-			)
+		if test.expected.Condition.Operator != "" {
+			if r.Condition.Right.Operator != test.expected.Condition.Right.Operator {
+				t.Fatalf(
+					"right condition operator %s interpreted as %s",
+					test.expected.Condition.Right.Operator,
+					r.Condition.Right.Operator,
+				)
+			}
+			if r.Condition.Right.Key != test.expected.Condition.Right.Key {
+				t.Fatalf(
+					"right condition key %s interpreted as %s",
+					test.expected.Condition.Right.Key,
+					r.Condition.Right.Key,
+				)
+			}
 		}
 	}
 }
