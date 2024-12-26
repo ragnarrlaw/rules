@@ -39,7 +39,7 @@ func TestParseRule(t *testing.T) {
 					Left: &Condition{
 						Key:      "PRODUCT_ID",
 						Operator: "IN",
-						Value:    []string{`"9f9285c6-a4d3-407e-9bd6-92ed094d0b02"`},
+						Value:    []string{"9f9285c6-a4d3-407e-9bd6-92ed094d0b02"},
 					},
 				}, Action: &Action{
 					DiscountType: "PERCENTAGE",
@@ -47,6 +47,21 @@ func TestParseRule(t *testing.T) {
 				},
 			},
 		},
+		// {
+		// 	`product_id = "9f9285c6-a4d3-407e-9bd6-92ed094d0b02" then percentage 10`,
+		// 	Rule{
+		// 		Condition: &LogicalCondition{
+		// 			Left: &Condition{
+		// 				Key:      "PRODUCT_ID",
+		// 				Operator: "=",
+		// 				Value:    "9f9285c6-a4d3-407e-9bd6-92ed094d0b02",
+		// 			},
+		// 		}, Action: &Action{
+		// 			DiscountType: "PERCENTAGE",
+		// 			Value:        "10",
+		// 		},
+		// 	},
+		// },
 	}
 
 	for _, test := range tests {
